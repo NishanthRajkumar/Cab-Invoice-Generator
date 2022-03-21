@@ -13,9 +13,37 @@ public class InvoiceGenerator
         costPerMinute = 1;
     }
 
+    /// <summary>
+    /// Calculates Fare of a ride using given distance and time
+    /// </summary>
+    /// <param name="distance">The distance traveled in the ride in KM</param>
+    /// <param name="time">The time traveled in minutes</param>
+    /// <returns>returns fare of the ride</returns>
     public double CalculateFare(double distance, double time)
     {
         double totalFare = (distance * costPerDistance) + (time * costPerMinute);
         return Math.Max(totalFare, minFare);
+    }
+
+    /// <summary>
+    /// Calculates Aggregate Fare of multiple ride using given set of rides
+    /// </summary>
+    /// <returns>Aggregate fare of all the rides</returns>
+    /// <exception cref="InvoiceException"></exception>
+    public double CalculateFare(Ride[] rides)
+    {
+        try
+        {
+            if (rides == null)
+                throw new ArgumentNullException(nameof(rides));
+            double totalFare = 0;
+            foreach (Ride ride in rides)
+                totalFare += CalculateFare(ride.Distance, ride.Time);
+            return totalFare;
+        }
+        catch (ArgumentNullException)
+        {
+            throw new InvoiceException(InvoiceException.ExceptionType.NULL_RIDES, "No Rides was passed in argument");
+        }
     }
 }
